@@ -16,7 +16,7 @@ The library consists of three header files, which are listed in the table below 
 |`Sprite.h`|handle sprites|
 |`GFXToolKit.h`|2D and 3D vector/matrix math|
 
-Note that the library is set in the`namespace` `cb::`
+Note that the library is set in the`namespace` `cb::`.
 
 A number of projects are available in subdirectories. See each of them for details on how to use the `NCurses Game Engine`.
 

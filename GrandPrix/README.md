@@ -4,6 +4,8 @@
 
 `Grand Prix` is written using the [`NCurses Game Engine`](../README.md).
 
+![Grand Prix in Action](GrandPrix.png "Grand Prix in Action")
+
 ## Usage
 
 `Grand Prix` is compiled with:

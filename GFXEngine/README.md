@@ -4,6 +4,8 @@
 
 `GFXEngine` is written using the [`NCurses Game Engine`](../README.md).
 
+![GFXEngine in Action](GFXEngine.png "GFXEngine in Action")
+
 ## Usage
 
 `GFXEngine` is compiled with:

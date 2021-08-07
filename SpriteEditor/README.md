@@ -2,6 +2,8 @@
 
 `Sprite Editor` is a [`NCurses Game Engine`](../README.md) `cb::Sprite` editor/viewer.
 
+![Sprite Editor in Action](SpriteEditor.png "Sprite Editor in Action")
+
 ## Usage
 
 `Sprite Editor` is compiled with:

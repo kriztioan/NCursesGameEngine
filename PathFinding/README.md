@@ -4,6 +4,8 @@
 
 `Path Finding` is written using the [`NCurses Game Engine`](../README.md).
 
+![Path Finding in Action](PathFinding.png "Path Finding in Action")
+
 ## Usage
 
 `Path Finding` is compiled with:

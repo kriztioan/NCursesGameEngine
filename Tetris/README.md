@@ -4,6 +4,8 @@
 
 `Tetris` is written using the [`NCurses Game Engine`](../README.md).
 
+![Tetris in Action](Tetris.png "Tetris in Action")
+
 ## Usage
 
 `Tetris` is compiled with:

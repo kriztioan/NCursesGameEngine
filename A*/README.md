@@ -4,6 +4,8 @@
 
 `A*` is written using the [`NCurses Game Engine`](../README.md).
 
+![A* in Action](A*.png "A* in Action")
+
 ## Usage
 
 `A*` is compiled with:
