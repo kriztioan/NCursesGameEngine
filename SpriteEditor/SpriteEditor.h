@@ -12,9 +12,6 @@
 
 #include "../NCursesGameEngine.h"
 
-#include <codecvt>
-#include <locale>
-
 class SpriteEditor : public cb::NCursesGameEngine {
 public:
   SpriteEditor(const int argc, const char *argv[]) {
@@ -22,8 +19,7 @@ public:
     bShowFPS = false;
 
     if (argc > 1) {
-      std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-      Sprite.ReadolcSprite(conv.from_bytes(argv[1]));
+      Sprite.ReadolcSprite(std::wstring(argv[1], argv[1] + strlen(argv[1])));
       nSpriteSize = std::max(Sprite.SpriteHeight(), Sprite.SpriteWidth());
     } else {
       nSpriteSize = 40;
@@ -58,7 +54,7 @@ private:
 
     if (MousePressed(BUTTON1_CLICKED, nMouseX, nMouseY)) {
 
-     if (nMouseY == 0 && nMouseX > 0 && nMouseX < FG_COLORS) {
+      if (nMouseY == 0 && nMouseX > 0 && nMouseX < FG_COLORS) {
         pixel.color = nMouseX;
         pixel.character = PIXEL_FULL;
       } else if (nMouseY > 0 && nMouseY < (nSpriteSize + 1) && nMouseX > 0 &&

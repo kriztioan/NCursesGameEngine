@@ -10,9 +10,7 @@
 #include "../GFXToolkit.h"
 #include "../NCursesGameEngine.h"
 
-#include <codecvt>
 #include <iostream>
-#include <locale>
 
 #ifndef CBNCURSESGAMEENGINE_GFXENGINE_H
 #define CBNCURSESGAMEENGINE_GFXENGINE_H
@@ -22,8 +20,7 @@ class GFXEngine : public cb::NCursesGameEngine {
 public:
   GFXEngine(const int argc, const char *argv[]) {
     if (argc > 1) {
-      std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> conv;
-      model = conv.from_bytes(argv[1]);
+      model = std::wstring(argv[1], argv[1] + strlen(argv[1]));
     } else {
       std::cerr << "please provide a model\n";
       exit(1);
@@ -68,7 +65,7 @@ public:
     for (auto t : mObj.triangles) {
 
       t = mWorld * t;
- 
+
       cb::vec3d normal = (t.p2 - t.p1).cross(t.p3 - t.p1).normalize();
 
       float fDot = normal * (t.p1 - vCamera);
