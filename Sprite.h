@@ -10,27 +10,27 @@
 #ifndef CBNCURSESGAMEENGINE_SPRITE_H
 #define CBNCURSESGAMEENGINE_SPRITE_H
 
+#include <filesystem>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <utility>
-#include <strstream>
 
 extern "C" {
 #include <zlib.h>
 }
 
 namespace cb {
-  class Sprite;
-  typedef struct {
-    wchar_t character;
-    short color;
-  } Pixel;
-};
+class Sprite;
+typedef struct {
+  wchar_t character;
+  short color;
+} Pixel;
+}; // namespace cb
 
 class cb::Sprite {
 
 public:
-
   Sprite() {
 
     nSpriteWidth = 0;
@@ -38,67 +38,73 @@ public:
     pPixels = nullptr;
   }
 
-  [[maybe_unused]] bool Create( int nWidth, int nHeight ) {
+  [[maybe_unused]] bool Create(int nWidth, int nHeight) {
 
     nSpriteWidth = nWidth;
     nSpriteHeight = nHeight;
 
-    if( nSpriteWidth * nSpriteHeight <= 0 ) return false;
+    if (nSpriteWidth * nSpriteHeight <= 0)
+      return false;
 
     delete pPixels;
     pPixels = new cb::Pixel[nSpriteWidth * nSpriteHeight];
-    std::fill_n( pPixels, nSpriteWidth * nSpriteHeight, ( cb::Pixel ) { L' ', 0 } );
+    std::fill_n(pPixels, nSpriteWidth * nSpriteHeight, (cb::Pixel){L' ', 0});
 
     return true;
   }
 
-  [[maybe_unused]] bool Read( const std::wstring &filename ) {
+  [[maybe_unused]] bool Read(const std::filesystem::path &filename) {
 
-    std::ifstream ifstr( filename, std::ios::in | std::ios::binary );
+    std::ifstream ifstr(filename, std::ios::in | std::ios::binary);
 
-    if( !ifstr.fail() ) return ReadFromStream( ifstr );
+    if (!ifstr.fail())
+      return ReadFromStream(ifstr);
 
     return false;
   }
 
-  [[maybe_unused]] bool Load( const char *d, std::streamsize s ) {
+  [[maybe_unused]] bool Load(const char *d, std::streamsize s) {
 
-    std::istrstream istrstr( d, s );
+    std::istringstream istrstr(d, s);
 
-    return ReadFromStream( istrstr );
+    return ReadFromStream(istrstr);
   }
 
-  [[maybe_unused]] bool z_Load( const char *z, std::streamsize s_z, uLongf s ) {
+  [[maybe_unused]] bool z_Load(const char *z, std::streamsize s_z, uLongf s) {
 
     char *d = new char[s];
 
-    uncompress( reinterpret_cast< Bytef * >( d ), &s, reinterpret_cast< const Bytef * >( z ), s_z );
+    uncompress(reinterpret_cast<Bytef *>(d), &s,
+               reinterpret_cast<const Bytef *>(z), s_z);
 
-    std::istrstream istrstr( d, s );
+    std::istringstream istrstr(d, s);
 
-    bool ok = ReadFromStream( istrstr );
+    bool ok = ReadFromStream(istrstr);
 
     delete[] d;
 
     return ok;
   }
 
-  [[maybe_unused]] bool ReadolcSprite( const std::wstring &filename ) {
+  [[maybe_unused]] bool ReadolcSprite(const std::filesystem::path &filename) {
 
     std::ifstream ifstr;
 
-    ifstr.open( filename, std::ios::in | std::ios::binary );
+    ifstr.open(filename, std::ios::in | std::ios::binary);
 
-    if( ifstr.fail() ) return false;
+    if (ifstr.fail())
+      return false;
 
-    ifstr.read( reinterpret_cast< char * >( &nSpriteWidth ), sizeof( int ) );
-    ifstr.read( reinterpret_cast< char * >( &nSpriteHeight ), sizeof( int ) );
+    ifstr.read(reinterpret_cast<char *>(&nSpriteWidth), sizeof(int));
+    ifstr.read(reinterpret_cast<char *>(&nSpriteHeight), sizeof(int));
 
     auto *colors = new short[nSpriteWidth * nSpriteHeight];
     auto *glyphs = new short[nSpriteWidth * nSpriteHeight];
 
-    ifstr.read( reinterpret_cast< char * >( colors ), nSpriteWidth * nSpriteHeight * sizeof( short ) );
-    ifstr.read( reinterpret_cast< char * >( glyphs ), nSpriteWidth * nSpriteHeight * sizeof( short ) );
+    ifstr.read(reinterpret_cast<char *>(colors),
+               nSpriteWidth * nSpriteHeight * sizeof(short));
+    ifstr.read(reinterpret_cast<char *>(glyphs),
+               nSpriteWidth * nSpriteHeight * sizeof(short));
 
     ifstr.close();
 
@@ -106,16 +112,16 @@ public:
 
     pPixels = new cb::Pixel[nSpriteWidth * nSpriteHeight];
 
-    for( int i = 0; i < nSpriteWidth * nSpriteHeight; i++ ) {
+    for (int i = 0; i < nSpriteWidth * nSpriteHeight; i++) {
 
-      if( glyphs[ i ] == ' ' ) {
+      if (glyphs[i] == ' ') {
 
-        pPixels[ i ].color = 0;
-        pPixels[ i ].character = ' ';
+        pPixels[i].color = 0;
+        pPixels[i].character = ' ';
       } else {
 
-        pPixels[ i ].color = colors[ i ];
-        pPixels[ i ].character = glyphs[ i ];// == ' ' ? ' ' : L'\u2588';
+        pPixels[i].color = colors[i];
+        pPixels[i].character = glyphs[i]; // == ' ' ? ' ' : L'\u2588';
       }
     }
 
@@ -125,51 +131,56 @@ public:
     return true;
   }
 
-  [[maybe_unused]] bool Write( const std::wstring &filename ) {
+  [[maybe_unused]] bool Write(const std::filesystem::path &filename) {
 
-    if( nSpriteWidth * nSpriteHeight <= 0 ) return false;
+    if (nSpriteWidth * nSpriteHeight <= 0)
+      return false;
 
-    std::ofstream ofstr( filename, std::ios::binary );
-    if( ofstr.fail() ) return false;
+    std::ofstream ofstr(filename, std::ios::binary);
 
-    ofstr.write( reinterpret_cast< char * >( &nSpriteWidth ), sizeof( int ) );
-    ofstr.write( reinterpret_cast< char * >( &nSpriteHeight ), sizeof( int ) );
-    ofstr.write( reinterpret_cast< char * >( pPixels ), nSpriteWidth * nSpriteHeight * sizeof( cb::Pixel ) );
+    if (ofstr.fail())
+      return false;
+
+    ofstr.write(reinterpret_cast<char *>(&nSpriteWidth), sizeof(int));
+    ofstr.write(reinterpret_cast<char *>(&nSpriteHeight), sizeof(int));
+    ofstr.write(reinterpret_cast<char *>(pPixels),
+                nSpriteWidth * nSpriteHeight * sizeof(cb::Pixel));
 
     return true;
   }
 
-  ~Sprite() {
+  ~Sprite() { delete pPixels; }
 
-    delete pPixels;
+  [[maybe_unused]] cb::Pixel &operator[](unsigned i) { return pPixels[i]; }
+
+  [[maybe_unused]] [[nodiscard]] inline int SpriteWidth() const {
+    return nSpriteWidth;
   }
 
-  [[maybe_unused]] cb::Pixel &operator[]( unsigned i ) { return pPixels[ i ]; }
-
-  [[maybe_unused]] [[nodiscard]] inline int SpriteWidth() const { return nSpriteWidth; }
-
-  [[maybe_unused]] [[nodiscard]] inline int SpriteHeight() const { return nSpriteHeight; }
+  [[maybe_unused]] [[nodiscard]] inline int SpriteHeight() const {
+    return nSpriteHeight;
+  }
 
 private:
-
   int nSpriteWidth;
   int nSpriteHeight;
   cb::Pixel *pPixels;
 
+  bool ReadFromStream(std::istream &in) {
 
-  bool ReadFromStream( std::istream &in ) {
+    in.read(reinterpret_cast<char *>(&nSpriteWidth), sizeof(int));
+    in.read(reinterpret_cast<char *>(&nSpriteHeight), sizeof(int));
 
-    in.read( reinterpret_cast< char * >( &nSpriteWidth ), sizeof( int ) );
-    in.read( reinterpret_cast< char * >( &nSpriteHeight ), sizeof( int ) );
-
-    if( nSpriteWidth * nSpriteHeight <= 0 ) return false;
+    if (nSpriteWidth * nSpriteHeight <= 0)
+      return false;
 
     delete pPixels;
     pPixels = new cb::Pixel[nSpriteWidth * nSpriteHeight];
-    in.read( reinterpret_cast< char * >( pPixels ), nSpriteWidth * nSpriteHeight * sizeof( cb::Pixel ) );
+    in.read(reinterpret_cast<char *>(pPixels),
+            nSpriteWidth * nSpriteHeight * sizeof(cb::Pixel));
 
     return true;
   }
 };
 
-#endif //CBNCURSESGAMEENGINE_SPRITE_H
+#endif // CBNCURSESGAMEENGINE_SPRITE_H
